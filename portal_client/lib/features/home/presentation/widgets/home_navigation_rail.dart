@@ -28,14 +28,14 @@ class HomeNavigationRail extends StatelessWidget {
       labelType: extended
           ? NavigationRailLabelType.none
           : NavigationRailLabelType.selected,
-      leading: Padding(
-        padding: const EdgeInsets.only(top: 12),
-        child: Icon(
-          Icons.work_outline,
-          size: 32,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ),
+      // leading: Padding(
+      //   padding: const EdgeInsets.only(top: 12),
+      //   child: Icon(
+      //     Icons.work_outline,
+      //     size: 32,
+      //     color: Theme.of(context).colorScheme.primary,
+      //   ),
+      // ),
       destinations: menuEntries
           .map(
             (entry) => NavigationRailDestination(
