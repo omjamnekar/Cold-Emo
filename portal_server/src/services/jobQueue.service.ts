@@ -1,6 +1,6 @@
 import { Job, JobStatus, UUID, IJobQueue } from "../types/index.js";
 import { createLogger } from "../utils/logger.js";
-import { eventEmitter } from "./eventEmitter.js";
+import { eventEmitter } from "./eventEmitter.service.js";
 import { EVENTS } from "../constants/index.js";
 
 const logger = createLogger("JobQueue");

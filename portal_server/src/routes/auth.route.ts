@@ -1,10 +1,10 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { asyncHandler } from "../middleware/errorHandler.js";
+import { asyncHandler } from "../middleware/errorHandler.middleware.js";
 import { createError } from "../utils/errors.js";
 import { Validator, schemas } from "../utils/validator.js";
-import { generateToken, authenticate } from "../middleware/auth.js";
-import { container } from "../services/container.js";
+import { generateToken, authenticate } from "../middleware/auth.middleware.js";
+import { container } from "../services/container.service.js";
 import { User, UUID } from "../types/index.js";
 
 const router = Router();

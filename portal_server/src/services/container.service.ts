@@ -1,8 +1,9 @@
-import { Repository, createRepository } from "./repository.js";
-import { JobQueue } from "./jobQueue.js";
-import { EventEmitter, eventEmitter } from "./eventEmitter.js";
+import { Repository, createRepository } from "./repository.service.js";
+import { JobQueue } from "./jobQueue.service.js";
+import { EventEmitter, eventEmitter } from "./eventEmitter.service.js";
 import { Logger, createLogger } from "../utils/logger.js";
 import { Project, Employee, GeneratedEmail, User } from "../types/index.js";
+import { Db } from "mongodb";
 
 /**
  * Dependency Injection Container
@@ -16,6 +17,7 @@ import { Project, Employee, GeneratedEmail, User } from "../types/index.js";
  */
 export class Container {
   private static instance: Container;
+  private db!: Db;
 
   private repositories: Map<string, Repository<any>> = new Map();
   private jobQueue: JobQueue;
@@ -63,6 +65,17 @@ export class Container {
 
   getEventEmitter(): EventEmitter {
     return this.eventEmitter;
+  }
+
+  registerDatabase(db: Db): void {
+    this.db = db;
+  }
+
+  getDatabase(): Db {
+    if (!this.db) {
+      throw new Error("Database has not been initialized");
+    }
+    return this.db;
   }
 
   getLogger(name: string): Logger {

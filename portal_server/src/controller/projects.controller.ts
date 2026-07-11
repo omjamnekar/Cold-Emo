@@ -6,8 +6,8 @@ import {
   UpdateProjectDto,
   Project,
 } from "../types/index.js";
-import { asyncHandler } from "../middleware/errorHandler.js";
-import { container } from "../services/container.js";
+import { asyncHandler } from "../middleware/errorHandler.middleware.js";
+import { container } from "../services/container.service.js";
 import { createError } from "../utils/errors.js";
 import { Validator, schemas } from "../utils/validator.js";
 import { PAGINATION } from "../constants/index.js";

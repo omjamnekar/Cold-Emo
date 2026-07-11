@@ -8,11 +8,11 @@ import {
   errorHandler,
   notFoundHandler,
   asyncHandler,
-} from "./middleware/errorHandler.js";
-import { requestLogger } from "./middleware/requestLogger.js";
-import authRoutes from "./routes/auth.js";
-import projectRoutes from "./routes/projects.js";
-import { container } from "./services/container.js";
+} from "./middleware/errorHandler.middleware.js";
+import { requestLogger } from "./middleware/requestLogger.middleware.js";
+import authRoutes from "./routes/auth.route.js";
+import projectRoutes from "./routes/projects.route.js";
+import { container } from "./services/container.service.js";
 
 const app: Application = express();
 const logger = container.getLogger("App");

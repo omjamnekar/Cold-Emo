@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import app from "./app.js";
+import MongoDatabase from "./database/mongo.db.js";
 import { config, validateConfig, isDev } from "./config/index.js";
-import { container } from "./services/container.js";
-import { eventEmitter } from "./services/eventEmitter.js";
+import { container } from "./services/container.service.js";
+import { eventEmitter } from "./services/eventEmitter.service.js";
 import { EVENTS } from "./constants/index.js";
-
 dotenv.config();
 
 const logger = container.getLogger("Server");
@@ -44,42 +44,41 @@ eventEmitter.on(EVENTS.JOB_FAILED, (data) => {
 
 const PORT = config.PORT;
 const HOST = config.HOST;
+async function startServer() {
+  try {
+    await MongoDatabase.connect();
 
-const server = app.listen(PORT, HOST, () => {
-  logger.info(`Server running`, {
-    host: HOST,
-    port: PORT,
-    env: config.NODE_ENV,
-  });
-});
+    container.registerDatabase(MongoDatabase.getDatabase());
 
-/* ============================================
-   GRACEFUL SHUTDOWN
-   ============================================ */
+    logger.info("MongoDB Connected");
 
-const shutdown = async (signal: string) => {
-  logger.info(`${signal} received. Shutting down gracefully...`);
+    const server = app.listen(config.PORT, config.HOST, () => {
+      logger.info("Server running", {
+        host: config.HOST,
+        port: config.PORT,
+        env: config.NODE_ENV,
+      });
+    });
 
-  server.close(async () => {
-    logger.info("Server closed");
-    process.exit(0);
-  });
+    // Graceful shutdown
+    const shutdown = async (signal: string) => {
+      logger.info(`${signal} received. Shutting down...`);
 
-  // Force shutdown after 10 seconds
-  setTimeout(() => {
-    logger.error("Forced shutdown after timeout");
+      server.close(async () => {
+        await MongoDatabase.disconnect(); // Close Mongo connection
+        logger.info("MongoDB disconnected");
+        process.exit(0);
+      });
+
+      setTimeout(() => process.exit(1), 10000);
+    };
+
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    process.on("SIGINT", () => shutdown("SIGINT"));
+  } catch (error) {
+    logger.error("Failed to start application", error as Error);
     process.exit(1);
-  }, 10000);
-};
+  }
+}
 
-process.on("SIGTERM", () => shutdown("SIGTERM"));
-process.on("SIGINT", () => shutdown("SIGINT"));
-
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled promise rejection", new Error(String(reason)));
-});
-
-process.on("uncaughtException", (error) => {
-  logger.error("Uncaught exception", error);
-  process.exit(1);
-});
+startServer();
